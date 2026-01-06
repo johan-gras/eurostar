@@ -77,6 +77,7 @@ export async function createApp(options: CreateAppOptions = {}): Promise<Fastify
   // Add content type parser with size limit for JSON
   app.addContentTypeParser('application/json', { parseAs: 'string', bodyLimit: 1024 * 1024 }, (_req, body, done) => {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const json = JSON.parse(body as string);
       done(null, json);
     } catch (err) {
@@ -122,32 +123,32 @@ export async function createApp(options: CreateAppOptions = {}): Promise<Fastify
   const claimService = services.claimService ?? new ClaimGeneratorService();
 
   // Register health routes (no auth required)
-  await registerHealthRoutes(app, { db, redis });
+  registerHealthRoutes(app, { db, redis });
 
   // Register seat routes (no auth required, no db required)
-  await registerSeatRoutes(app);
+  registerSeatRoutes(app);
 
   // Register queue routes (no auth required, no db required)
-  await registerQueueRoutes(app);
+  registerQueueRoutes(app);
 
   // Register auth routes (require db and redis)
   if (db && redis) {
-    await registerAuthRoutes(app, { db, redis });
+    registerAuthRoutes(app, { db, redis });
   }
 
   // Register API routes (require db)
   if (db) {
-    await registerBookingRoutes(app, {
+    registerBookingRoutes(app, {
       db,
       eligibilityService,
     });
 
-    await registerClaimsRoutes(app, {
+    registerClaimsRoutes(app, {
       db,
       claimService,
     });
 
-    await registerPreferencesRoutes(app, { db });
+    registerPreferencesRoutes(app, { db });
   }
 
   return app;

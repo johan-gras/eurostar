@@ -59,6 +59,7 @@ export const TEST_BOOKING = {
  * Complete notification data for testing.
  */
 export const TEST_NOTIFICATION_DATA: ClaimNotificationData = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
   claim: TEST_CLAIM as any,
   user: TEST_USER,
   booking: TEST_BOOKING,
@@ -175,6 +176,7 @@ export function createTestNotificationData(
   overrides: Partial<ClaimNotificationData> = {}
 ): ClaimNotificationData {
   return {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
     claim: { ...TEST_CLAIM, ...(overrides.claim ?? {}) } as any,
     user: { ...TEST_USER, ...(overrides.user ?? {}) },
     booking: { ...TEST_BOOKING, ...(overrides.booking ?? {}) },

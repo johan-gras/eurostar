@@ -40,10 +40,10 @@ export interface ClaimsRoutesOptions {
 /**
  * Register claims routes.
  */
-export async function registerClaimsRoutes(
+export function registerClaimsRoutes(
   app: FastifyInstance,
   options: ClaimsRoutesOptions
-): Promise<void> {
+): void {
   const { db, claimService = new ClaimGeneratorService() } = options;
 
   /**

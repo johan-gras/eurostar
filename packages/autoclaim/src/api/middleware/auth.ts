@@ -75,7 +75,7 @@ export async function registerAuth(
       const authHeader = request.headers.authorization;
 
       if (!authHeader) {
-        reply.status(401).send(
+        void reply.status(401).send(
           createErrorResponse(
             ApiErrorCode.UNAUTHORIZED,
             'Authorization header is required'
@@ -85,7 +85,7 @@ export async function registerAuth(
       }
 
       if (!authHeader.startsWith('Bearer ')) {
-        reply.status(401).send(
+        void reply.status(401).send(
           createErrorResponse(
             ApiErrorCode.INVALID_TOKEN,
             'Invalid authorization format. Use Bearer token'
@@ -97,7 +97,7 @@ export async function registerAuth(
       const token = authHeader.slice(7);
 
       if (!token) {
-        reply.status(401).send(
+        void reply.status(401).send(
           createErrorResponse(
             ApiErrorCode.INVALID_TOKEN,
             'Token is required'
@@ -108,14 +108,14 @@ export async function registerAuth(
 
       // Verify JWT
       if (secret && app.jwt) {
-        const decoded = await app.jwt.verify<JwtPayload>(token);
+        const decoded = app.jwt.verify<JwtPayload>(token);
         request.jwtUser = decoded;
       } else {
         // Placeholder: decode without verification for dev
         // In production, ALWAYS verify tokens
         const payload = decodeToken(token);
         if (!payload) {
-          reply.status(401).send(
+          void reply.status(401).send(
             createErrorResponse(
               ApiErrorCode.INVALID_TOKEN,
               'Invalid token format'
@@ -128,7 +128,7 @@ export async function registerAuth(
     } catch (error) {
       if (error instanceof Error) {
         if (error.message.includes('expired')) {
-          reply.status(401).send(
+          void reply.status(401).send(
             createErrorResponse(
               ApiErrorCode.TOKEN_EXPIRED,
               'Token has expired'
@@ -138,13 +138,15 @@ export async function registerAuth(
         }
       }
 
-      reply.status(401).send(
+      void reply.status(401).send(
         createErrorResponse(
           ApiErrorCode.INVALID_TOKEN,
           'Invalid or expired token'
         )
       );
     }
+    // Ensure async for compatibility with preHandler hooks
+    await Promise.resolve();
   });
 }
 
@@ -186,7 +188,7 @@ export function authPreHandler(
   if (app.authenticate) {
     app.authenticate(request, reply).then(() => done()).catch(done);
   } else {
-    reply.status(500).send(
+    void reply.status(500).send(
       createErrorResponse(
         ApiErrorCode.INTERNAL_ERROR,
         'Auth not configured'

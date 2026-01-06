@@ -55,10 +55,10 @@ function toUserResponse(user: {
 /**
  * Register authentication routes.
  */
-export async function registerAuthRoutes(
+export function registerAuthRoutes(
   app: FastifyInstance,
   options: AuthRoutesOptions
-): Promise<void> {
+): void {
   const { db, redis } = options;
 
   // Create auth repository and service

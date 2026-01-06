@@ -59,7 +59,7 @@ function getCoachClass(trainType: TrainType, coachNumber: number): CoachClass | 
 /**
  * Register seat routes.
  */
-export async function registerSeatRoutes(app: FastifyInstance): Promise<void> {
+export function registerSeatRoutes(app: FastifyInstance): void {
   /**
    * GET /api/v1/seats/:trainType/coaches
    * Returns list of coaches with their class and seat counts

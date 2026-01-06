@@ -51,10 +51,10 @@ function toPreferencesResponse(prefs: {
 /**
  * Register user preferences routes.
  */
-export async function registerPreferencesRoutes(
+export function registerPreferencesRoutes(
   app: FastifyInstance,
   options: PreferencesRoutesOptions
-): Promise<void> {
+): void {
   const { db } = options;
 
   // Create repository and service

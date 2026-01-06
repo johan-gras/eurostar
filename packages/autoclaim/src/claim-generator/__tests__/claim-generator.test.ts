@@ -12,7 +12,6 @@ import {
 import {
   ClaimEventEmitter,
   createClaimEventEmitter,
-  ClaimEventType,
 } from '../events.js';
 import {
   EUROSTAR_CLAIM_PORTAL_URL,

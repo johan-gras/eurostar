@@ -188,6 +188,55 @@ Use this before/after each operation:
 
 ---
 
+## Lesson 7: Verify Delegated Work is Complete
+
+**Date:** 2026-01-06
+**Discovered:** Checking CI for PR #10 (ESLint fixes)
+
+**What went wrong:**
+- Delegated "fix all 31 ESLint errors" to nested Claude instance
+- Instance reported task complete
+- CI still failed - only fixed some packages, missed 50+ errors in autoclaim package
+
+**Impact:**
+- False sense of completion
+- Additional iteration required
+- CI still blocked
+
+**Prevention:**
+- After delegated work, run verification locally:
+```bash
+pnpm lint && pnpm build && pnpm test
+```
+- Don't trust "done" status - verify output matches expectation
+- Be specific in delegation: "Fix ALL lint errors in ALL packages"
+
+**Checklist item:** Verify delegated work passes ALL checks before considering it done.
+
+---
+
+## Lesson 8: Build Errors Also Block CI
+
+**Date:** 2026-01-06
+**Discovered:** After fixing lint errors, build still failed
+
+**What went wrong:**
+- Focus was on ESLint errors (31 reported)
+- Didn't check if `pnpm build` passed
+- Pre-existing TypeScript error (missing `Redis` import) went unnoticed
+
+**Impact:**
+- Even after lint fix, CI still failed
+- Build error was present on main branch all along
+
+**Prevention:**
+- Always run full CI locally: `pnpm lint && pnpm build && pnpm test`
+- Don't just run lint - the build can have separate errors
+
+**Checklist item:** Run full CI (lint + build + test), not just lint.
+
+---
+
 ## Error Log
 
 | Date | Error | Root Cause | Time Lost |
@@ -195,6 +244,8 @@ Use this before/after each operation:
 | 2026-01-06 | CI failing on all PRs | Never ran lint before push | ~30 min |
 | 2026-01-06 | PR #6 wrong endpoints | Branched from main, not PR #5 | ~10 min |
 | 2026-01-06 | Didn't notice CI failures | Didn't check CI status | ~20 min |
+| 2026-01-06 | PR #10 incomplete | Delegated fix only covered some packages | ~15 min |
+| 2026-01-06 | Build error in server.ts | Missing Redis type import pre-existing | ~10 min |
 
 ---
 

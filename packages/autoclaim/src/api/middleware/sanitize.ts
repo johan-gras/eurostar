@@ -29,6 +29,7 @@ export function sanitizeObject<T>(obj: T, maxStringLength = 100000): T {
   }
 
   if (Array.isArray(obj)) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return obj.map((item) => sanitizeObject(item, maxStringLength)) as T;
   }
 
@@ -55,7 +56,7 @@ export function sanitizeEmail(email: string): string {
  */
 export function registerSanitization(app: FastifyInstance): void {
   // Sanitize request body before validation
-  app.addHook('preValidation', async (request: FastifyRequest) => {
+  app.addHook('preValidation', (request: FastifyRequest) => {
     if (request.body && typeof request.body === 'object') {
       request.body = sanitizeObject(request.body);
     }

@@ -1,9 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   getTierForDelay,
-  getTierName,
   isDelayCompensable,
-  COMPENSATION_TIERS,
 } from '../tiers.js';
 import {
   calculateCompensation,
@@ -15,16 +13,14 @@ import {
 } from '../calculator.js';
 import {
   isClaimWindowOpen,
-  getClaimWindowOpenTime,
   hoursUntilClaimWindowOpens,
   isWithinClaimWindow,
   getClaimDeadline,
   daysUntilDeadline,
-  hasDeadlinePassed,
   formatTimeUntilDeadline,
 } from '../deadline.js';
 import { EligibilityService, checkEligibility } from '../service.js';
-import { Currency, EligibilityReason, MINIMUM_PAYOUT } from '../types.js';
+import { Currency, EligibilityReason } from '../types.js';
 import {
   createMockBooking,
   AFTER_WINDOW_OPENS,
@@ -33,7 +29,6 @@ import {
   WITHIN_DEADLINE,
   DELAY_BOUNDARIES,
   TICKET_PRICES,
-  EXPECTED_COMPENSATION_EUR_100,
 } from './fixtures.js';
 
 describe('Tiers', () => {

@@ -24,10 +24,10 @@ export interface HealthRoutesOptions {
 /**
  * Register health check routes.
  */
-export async function registerHealthRoutes(
+export function registerHealthRoutes(
   app: FastifyInstance,
   options: HealthRoutesOptions = {}
-): Promise<void> {
+): void {
   const { db, redis } = options;
 
   /**

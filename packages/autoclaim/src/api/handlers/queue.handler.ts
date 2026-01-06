@@ -34,7 +34,7 @@ import { ApiException } from '../middleware/error-handler.js';
 /**
  * Register queue routes.
  */
-export async function registerQueueRoutes(app: FastifyInstance): Promise<void> {
+export function registerQueueRoutes(app: FastifyInstance): void {
   /**
    * GET /api/v1/queue/terminals
    * Returns list of all terminals with metadata
