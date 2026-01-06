@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { format } from 'date-fns';
 import { QueueStatus, type QueueStatusData, type CrowdLevel } from '@/components/queue/QueueStatus';
 import { QueueTimeline, type HourlyPrediction } from '@/components/queue/QueueTimeline';
 import { TerminalSelector, TERMINALS, type TerminalQueuePreview } from '@/components/queue/TerminalSelector';
@@ -116,6 +117,7 @@ function hasSignificantChange(
 
 export default function QueuePage() {
   const [selectedTerminal, setSelectedTerminal] = React.useState('st-pancras');
+  const [selectedDate, setSelectedDate] = React.useState<Date>(new Date());
   const [status, setStatus] = React.useState<QueueStatusData | null>(null);
   const [predictions, setPredictions] = React.useState<HourlyPrediction[]>([]);
   const [queuePreviews, setQueuePreviews] = React.useState<TerminalQueuePreview[]>([]);
@@ -158,11 +160,13 @@ export default function QueuePage() {
     }
     setError(null);
 
+    const dateParam = format(selectedDate, 'yyyy-MM-dd');
+
     try {
       // Try to fetch from API
       const [statusResponse, predictionsResponse] = await Promise.all([
         apiClient.get<QueueStatusData>(`/queue/${selectedTerminal}/current`),
-        apiClient.get<HourlyPrediction[]>(`/queue/${selectedTerminal}/timeline`),
+        apiClient.get<HourlyPrediction[]>(`/queue/${selectedTerminal}/timeline`, { date: dateParam }),
       ]);
 
       const newStatus = statusResponse.data;
@@ -210,15 +214,15 @@ export default function QueuePage() {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [selectedTerminal, status]);
+  }, [selectedTerminal, selectedDate, status]);
 
-  // Initial fetch when terminal changes
+  // Initial fetch when terminal or date changes
   React.useEffect(() => {
     void fetchQueueData(true);
-    // Reset last updated when terminal changes
+    // Reset last updated when terminal/date changes
     setLastUpdatedAt(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTerminal]);
+  }, [selectedTerminal, selectedDate]);
 
   // Auto-refresh every 5 minutes
   React.useEffect(() => {
@@ -360,7 +364,7 @@ export default function QueuePage() {
           key={`timeline-${dataAnimationKey}`}
           className="animate-in fade-in duration-500"
         >
-          <QueueTimeline predictions={predictions} isLoading={isLoading} />
+          <QueueTimeline predictions={predictions} isLoading={isLoading} selectedDate={selectedDate} onDateChange={setSelectedDate} />
         </div>
 
         {/* Arrival Planner - Expandable accordion on mobile */}
@@ -416,7 +420,7 @@ export default function QueuePage() {
             key={`timeline-${dataAnimationKey}`}
             className="animate-in fade-in duration-500"
           >
-            <QueueTimeline predictions={predictions} isLoading={isLoading} />
+            <QueueTimeline predictions={predictions} isLoading={isLoading} selectedDate={selectedDate} onDateChange={setSelectedDate} />
           </div>
 
           {/* Peak Hours Guide - Expandable Section */}

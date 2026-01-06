@@ -130,7 +130,7 @@ export async function registerQueueRoutes(app: FastifyInstance): Promise<void> {
       reply: FastifyReply
     ) => {
       const { terminal } = request.params;
-      const hours = request.query.hours ?? 12;
+      const { hours = 12, date } = request.query;
 
       if (!terminalConfig[terminal as Terminal]) {
         throw ApiException.notFound(
@@ -139,7 +139,7 @@ export async function registerQueueRoutes(app: FastifyInstance): Promise<void> {
         );
       }
 
-      const startTime = new Date();
+      const startTime = date ? new Date(date) : new Date();
       const predictions = predictQueueTimeline(terminal as Terminal, startTime, hours);
 
       const response: TimelinePredictionResponse[] = predictions.map((prediction, index) => {
