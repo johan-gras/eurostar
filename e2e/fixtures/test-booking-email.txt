@@ -1,0 +1,22 @@
+Your Eurostar booking confirmation
+
+Thank you for booking with Eurostar!
+
+Booking Reference: E2ETST
+Ticket Number: IV123456789
+
+OUTBOUND JOURNEY
+----------------
+Train: Eurostar 9007
+Date: 15 March 2026
+Departs: London St Pancras 08:01
+Arrives: Paris Gare du Nord 11:17
+
+Passenger: Mr E2E Test User
+Coach: 3
+Seat: 61
+
+Please arrive at the station at least 90 minutes before departure.
+
+Best regards,
+Eurostar Team

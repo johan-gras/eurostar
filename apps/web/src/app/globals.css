@@ -1,0 +1,132 @@
+/**
+ * Eurostar Tools Design Tokens
+ *
+ * This file defines CSS custom properties for the design system.
+ *
+ * Semantic Colors:
+ *   --color-success-*: Green shades for positive states (on-time, approved)
+ *   --color-warning-*: Amber shades for warnings (minor delays, pending)
+ *   --color-error-*: Red shades for errors (severe delays, rejected)
+ *   --color-info-*: Blue shades for informational states
+ *
+ * Layout:
+ *   --spacing-page: Consistent page padding (1rem mobile, 2rem desktop)
+ *   --radius-card: Card border radius (0.75rem)
+ *
+ * Usage with theme.ts:
+ *   Import { delayColors, claimStatusColors, animationDurations } from '@/lib/theme'
+ *   for type-safe access to these tokens in TypeScript.
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Existing shadcn/ui tokens */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+
+    /* Semantic Colors - Success (green) */
+    --color-success: 142 76% 36%;
+    --color-success-light: 142 76% 94%;
+    --color-success-dark: 142 76% 26%;
+    --color-success-foreground: 0 0% 100%;
+
+    /* Semantic Colors - Warning (amber) */
+    --color-warning: 38 92% 50%;
+    --color-warning-light: 48 96% 89%;
+    --color-warning-dark: 32 95% 44%;
+    --color-warning-foreground: 0 0% 0%;
+
+    /* Semantic Colors - Error (red) */
+    --color-error: 0 84% 60%;
+    --color-error-light: 0 86% 94%;
+    --color-error-dark: 0 74% 42%;
+    --color-error-foreground: 0 0% 100%;
+
+    /* Semantic Colors - Info (blue) */
+    --color-info: 217 91% 60%;
+    --color-info-light: 214 95% 93%;
+    --color-info-dark: 224 76% 48%;
+    --color-info-foreground: 0 0% 100%;
+
+    /* Layout Tokens */
+    --spacing-page: 1rem;
+    --radius-card: 0.75rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+
+    /* Dark mode semantic colors */
+    --color-success: 142 71% 45%;
+    --color-success-light: 142 76% 15%;
+    --color-success-dark: 142 76% 55%;
+
+    --color-warning: 38 92% 50%;
+    --color-warning-light: 32 80% 15%;
+    --color-warning-dark: 48 96% 60%;
+
+    --color-error: 0 84% 60%;
+    --color-error-light: 0 74% 15%;
+    --color-error-dark: 0 86% 70%;
+
+    --color-info: 217 91% 60%;
+    --color-info-light: 224 76% 15%;
+    --color-info-dark: 214 95% 70%;
+  }
+
+  /* Responsive page spacing */
+  @media (min-width: 768px) {
+    :root {
+      --spacing-page: 2rem;
+    }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

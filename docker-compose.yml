@@ -1,0 +1,119 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: eurostar-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: eurostar
+      POSTGRES_PASSWORD: eurostar_dev
+      POSTGRES_DB: eurostar
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eurostar -d eurostar"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis for BullMQ
+  redis:
+    image: redis:7-alpine
+    container_name: eurostar-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Next.js Web App (dev mode - uses local code)
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: deps
+    container_name: eurostar-web
+    working_dir: /app
+    command: pnpm --filter=@eurostar/web dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+      - DATABASE_URL=postgresql://eurostar:eurostar_dev@postgres:5432/eurostar
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/web/node_modules
+      - /app/apps/web/.next
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Fastify API (dev mode - uses local code)
+  api:
+    build:
+      context: .
+      dockerfile: packages/autoclaim/Dockerfile
+      target: deps
+    container_name: eurostar-api
+    working_dir: /app
+    command: pnpm --filter=@eurostar/autoclaim dev
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - HOST=0.0.0.0
+      - DATABASE_URL=postgresql://eurostar:eurostar_dev@postgres:5432/eurostar
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=dev-secret-change-in-production
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/packages/autoclaim/node_modules
+      - /app/packages/core/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Background Worker
+  worker:
+    build:
+      context: .
+      dockerfile: packages/autoclaim/Dockerfile
+      target: deps
+    container_name: eurostar-worker
+    working_dir: /app
+    command: pnpm --filter=@eurostar/core worker
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://eurostar:eurostar_dev@postgres:5432/eurostar
+      - REDIS_URL=redis://redis:6379
+      - GTFS_RT_API_KEY=${GTFS_RT_API_KEY:-}
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/packages/core/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:

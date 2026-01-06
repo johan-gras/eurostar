@@ -1,0 +1,42 @@
+# Railway deployment configuration
+# https://docs.railway.app/reference/config-as-code
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "apps/web/Dockerfile"
+
+[deploy]
+startCommand = "node apps/web/server.js"
+healthcheckPath = "/"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+[[services]]
+name = "web"
+dockerfile = "apps/web/Dockerfile"
+[services.build]
+  watchPatterns = ["apps/web/**", "packages/**"]
+[services.deploy]
+  startCommand = "node apps/web/server.js"
+  healthcheckPath = "/"
+  numReplicas = 1
+
+[[services]]
+name = "api"
+dockerfile = "packages/autoclaim/Dockerfile"
+[services.build]
+  watchPatterns = ["packages/autoclaim/**", "packages/core/**"]
+[services.deploy]
+  startCommand = "node packages/autoclaim/dist/server.js"
+  healthcheckPath = "/health"
+  numReplicas = 1
+
+[[services]]
+name = "worker"
+dockerfile = "packages/autoclaim/Dockerfile"
+[services.build]
+  watchPatterns = ["packages/core/**"]
+[services.deploy]
+  startCommand = "node packages/core/dist/worker.js"
+  numReplicas = 1

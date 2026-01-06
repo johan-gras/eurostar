@@ -1,0 +1,42 @@
+{
+  "name": "eurostar-tools",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "test": "turbo test",
+    "test:watch": "turbo test:watch",
+    "lint": "turbo lint",
+    "lint:fix": "turbo lint:fix",
+    "typecheck": "turbo typecheck",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "clean": "turbo clean && rm -rf node_modules",
+    "db:generate": "turbo db:generate",
+    "db:migrate": "turbo db:migrate",
+    "db:migrate:prod": "pnpm --filter=@eurostar/core db:migrate:prod",
+    "db:seed": "pnpm --filter=@eurostar/core db:seed",
+    "db:studio": "turbo db:studio",
+    "test:e2e": "pnpm --filter=@eurostar/web e2e",
+    "test:e2e:ui": "pnpm --filter=@eurostar/web e2e:ui",
+    "test:e2e:screenshots": "pnpm --filter=@eurostar/web e2e e2e/visual-baseline.spec.ts",
+    "test:e2e:headed": "playwright test --headed",
+    "test:all": "pnpm test && pnpm test:e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.0",
+    "prettier": "^3.2.4",
+    "turbo": "^2.3.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}

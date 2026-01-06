@@ -1,0 +1,134 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: eurostar-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-eurostar}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${POSTGRES_DB:-eurostar}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-eurostar} -d ${POSTGRES_DB:-eurostar}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - eurostar-network
+
+  # Redis for BullMQ
+  redis:
+    image: redis:7-alpine
+    container_name: eurostar-redis
+    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - eurostar-network
+
+  # Next.js Web App
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: eurostar-web
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=${API_URL:?API_URL is required}
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - eurostar-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  # Fastify API
+  api:
+    build:
+      context: .
+      dockerfile: packages/autoclaim/Dockerfile
+    container_name: eurostar-api
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - HOST=0.0.0.0
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-eurostar}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-eurostar}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET is required}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-7d}
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - GTFS_RT_API_KEY=${GTFS_RT_API_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - eurostar-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  # Background Worker
+  worker:
+    build:
+      context: .
+      dockerfile: packages/autoclaim/Dockerfile
+    container_name: eurostar-worker
+    restart: always
+    command: ["node", "packages/core/dist/worker.js"]
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-eurostar}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-eurostar}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - GTFS_RT_API_KEY=${GTFS_RT_API_KEY:-}
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - eurostar-network
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  eurostar-network:
+    driver: bridge
