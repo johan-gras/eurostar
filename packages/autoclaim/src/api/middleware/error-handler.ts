@@ -178,7 +178,7 @@ export function registerErrorHandler(app: FastifyInstance): void {
  */
 export function registerNotFoundHandler(app: FastifyInstance): void {
   app.setNotFoundHandler((request, reply) => {
-    void reply.status(404).send(
+    reply.status(404).send(
       createErrorResponse(
         ApiErrorCode.NOT_FOUND,
         `Route ${request.method} ${request.url} not found`

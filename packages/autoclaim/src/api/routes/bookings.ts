@@ -45,10 +45,10 @@ export interface BookingRoutesOptions {
 /**
  * Register booking routes.
  */
-export function registerBookingRoutes(
+export async function registerBookingRoutes(
   app: FastifyInstance,
   options: BookingRoutesOptions
-): void {
+): Promise<void> {
   const {
     db,
     eligibilityService = new EligibilityService(),

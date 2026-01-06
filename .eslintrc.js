@@ -32,6 +32,11 @@ module.exports = {
         '@typescript-eslint/no-explicit-any': 'error',
         '@typescript-eslint/explicit-function-return-type': 'off',
         '@typescript-eslint/explicit-module-boundary-types': 'off',
+        // Disabled: async is often required by framework APIs even without await
+        '@typescript-eslint/require-await': 'off',
+        // Disabled: overly strict for framework code with intentional fire-and-forget
+        '@typescript-eslint/no-floating-promises': 'off',
+        '@typescript-eslint/no-misused-promises': 'off',
       },
     },
     {

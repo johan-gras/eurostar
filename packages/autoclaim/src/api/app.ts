@@ -123,32 +123,32 @@ export async function createApp(options: CreateAppOptions = {}): Promise<Fastify
   const claimService = services.claimService ?? new ClaimGeneratorService();
 
   // Register health routes (no auth required)
-  registerHealthRoutes(app, { db, redis });
+  await registerHealthRoutes(app, { db, redis });
 
   // Register seat routes (no auth required, no db required)
-  registerSeatRoutes(app);
+  await registerSeatRoutes(app);
 
   // Register queue routes (no auth required, no db required)
-  registerQueueRoutes(app);
+  await registerQueueRoutes(app);
 
   // Register auth routes (require db and redis)
   if (db && redis) {
-    registerAuthRoutes(app, { db, redis });
+    await registerAuthRoutes(app, { db, redis });
   }
 
   // Register API routes (require db)
   if (db) {
-    registerBookingRoutes(app, {
+    await registerBookingRoutes(app, {
       db,
       eligibilityService,
     });
 
-    registerClaimsRoutes(app, {
+    await registerClaimsRoutes(app, {
       db,
       claimService,
     });
 
-    registerPreferencesRoutes(app, { db });
+    await registerPreferencesRoutes(app, { db });
   }
 
   return app;

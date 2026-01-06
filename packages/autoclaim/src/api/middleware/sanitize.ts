@@ -56,7 +56,7 @@ export function sanitizeEmail(email: string): string {
  */
 export function registerSanitization(app: FastifyInstance): void {
   // Sanitize request body before validation
-  app.addHook('preValidation', (request: FastifyRequest) => {
+  app.addHook('preValidation', async (request: FastifyRequest) => {
     if (request.body && typeof request.body === 'object') {
       request.body = sanitizeObject(request.body);
     }

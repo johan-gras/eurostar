@@ -121,7 +121,7 @@ async function startWorkers(
   services.delayMonitorWorker = createDelayMonitorWorker(
     redis,
     db,
-    (event) => {
+    async (event) => {
       // Log completed booking events for eligible claims
       // The notification service will handle queuing once we have the full booking data
       if (event.isEligibleForClaim) {
@@ -284,8 +284,8 @@ async function main(): Promise<void> {
   };
 
   // Register shutdown handlers
-  process.on('SIGTERM', () => void shutdown('SIGTERM'));
-  process.on('SIGINT', () => void shutdown('SIGINT'));
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
 
   // Handle uncaught errors
   process.on('uncaughtException', (err) => {

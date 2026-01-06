@@ -101,12 +101,11 @@ export type ClaimEventType = (typeof ClaimEventType)[keyof typeof ClaimEventType
 
 /**
  * Handler function types for each event.
- * Note: Handlers must be synchronous. For async operations, queue work in the handler.
  */
-export type ClaimCreatedHandler = (event: ClaimCreatedEvent) => void;
-export type ClaimSubmittedHandler = (event: ClaimSubmittedEvent) => void;
-export type ClaimStatusChangedHandler = (event: ClaimStatusChangedEvent) => void;
-export type ClaimDeadlineApproachingHandler = (event: ClaimDeadlineApproachingEvent) => void;
+export type ClaimCreatedHandler = (event: ClaimCreatedEvent) => void | Promise<void>;
+export type ClaimSubmittedHandler = (event: ClaimSubmittedEvent) => void | Promise<void>;
+export type ClaimStatusChangedHandler = (event: ClaimStatusChangedEvent) => void | Promise<void>;
+export type ClaimDeadlineApproachingHandler = (event: ClaimDeadlineApproachingEvent) => void | Promise<void>;
 
 /**
  * Typed event emitter for claim lifecycle events.

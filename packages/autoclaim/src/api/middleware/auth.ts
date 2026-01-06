@@ -75,7 +75,7 @@ export async function registerAuth(
       const authHeader = request.headers.authorization;
 
       if (!authHeader) {
-        void reply.status(401).send(
+        reply.status(401).send(
           createErrorResponse(
             ApiErrorCode.UNAUTHORIZED,
             'Authorization header is required'
@@ -85,7 +85,7 @@ export async function registerAuth(
       }
 
       if (!authHeader.startsWith('Bearer ')) {
-        void reply.status(401).send(
+        reply.status(401).send(
           createErrorResponse(
             ApiErrorCode.INVALID_TOKEN,
             'Invalid authorization format. Use Bearer token'
@@ -97,7 +97,7 @@ export async function registerAuth(
       const token = authHeader.slice(7);
 
       if (!token) {
-        void reply.status(401).send(
+        reply.status(401).send(
           createErrorResponse(
             ApiErrorCode.INVALID_TOKEN,
             'Token is required'
@@ -115,7 +115,7 @@ export async function registerAuth(
         // In production, ALWAYS verify tokens
         const payload = decodeToken(token);
         if (!payload) {
-          void reply.status(401).send(
+          reply.status(401).send(
             createErrorResponse(
               ApiErrorCode.INVALID_TOKEN,
               'Invalid token format'
@@ -128,7 +128,7 @@ export async function registerAuth(
     } catch (error) {
       if (error instanceof Error) {
         if (error.message.includes('expired')) {
-          void reply.status(401).send(
+          reply.status(401).send(
             createErrorResponse(
               ApiErrorCode.TOKEN_EXPIRED,
               'Token has expired'
@@ -138,15 +138,13 @@ export async function registerAuth(
         }
       }
 
-      void reply.status(401).send(
+      reply.status(401).send(
         createErrorResponse(
           ApiErrorCode.INVALID_TOKEN,
           'Invalid or expired token'
         )
       );
     }
-    // Ensure async for compatibility with preHandler hooks
-    await Promise.resolve();
   });
 }
 
@@ -188,7 +186,7 @@ export function authPreHandler(
   if (app.authenticate) {
     app.authenticate(request, reply).then(() => done()).catch(done);
   } else {
-    void reply.status(500).send(
+    reply.status(500).send(
       createErrorResponse(
         ApiErrorCode.INTERNAL_ERROR,
         'Auth not configured'
