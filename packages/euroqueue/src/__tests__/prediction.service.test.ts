@@ -5,7 +5,6 @@ import {
   getBestArrivalTime,
   type PredictionContext,
 } from '../services/prediction.service.js';
-import type { Terminal } from '../types.js';
 
 describe('Prediction Service', () => {
   describe('predictQueueTime', () => {
