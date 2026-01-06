@@ -161,8 +161,8 @@ export default function QueuePage() {
     try {
       // Try to fetch from API
       const [statusResponse, predictionsResponse] = await Promise.all([
-        apiClient.get<QueueStatusData>(`/queue/${selectedTerminal}/status`),
-        apiClient.get<HourlyPrediction[]>(`/queue/${selectedTerminal}/predictions`),
+        apiClient.get<QueueStatusData>(`/queue/${selectedTerminal}/current`),
+        apiClient.get<HourlyPrediction[]>(`/queue/${selectedTerminal}/timeline`),
       ]);
 
       const newStatus = statusResponse.data;
