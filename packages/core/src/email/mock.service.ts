@@ -15,7 +15,7 @@ export class MockEmailService implements EmailService {
   private sentEmails: SentEmail[] = [];
   private idCounter = 0;
 
-  async sendEmail(
+  sendEmail(
     options: SendEmailOptions
   ): Promise<Result<SendEmailResult, EmailError>> {
     const id = `mock_${++this.idCounter}`;
@@ -26,7 +26,7 @@ export class MockEmailService implements EmailService {
       sentAt: new Date(),
     });
 
-    return ok({ id });
+    return Promise.resolve(ok({ id }));
   }
 
   getSentEmails(): SentEmail[] {

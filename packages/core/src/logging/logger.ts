@@ -182,12 +182,12 @@ export function getFastifyLoggerOptions(
     },
     // Serialize common request properties
     serializers: {
-      req: (req) => ({
+      req: (req: { method: string; url: string; ip: string }) => ({
         method: req.method,
         url: req.url,
         remoteAddress: req.ip,
       }),
-      res: (res) => ({
+      res: (res: { statusCode: number }) => ({
         statusCode: res.statusCode,
       }),
     },

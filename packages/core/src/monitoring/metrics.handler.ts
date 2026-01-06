@@ -37,10 +37,10 @@ export interface MetricsRoutesOptions {
  * // Now GET /metrics returns Prometheus format metrics
  * ```
  */
-export async function registerMetricsRoutes(
+export function registerMetricsRoutes(
   app: FastifyInstance,
   options: MetricsRoutesOptions = {}
-): Promise<void> {
+): void {
   const {
     path = '/metrics',
     enableRequestMetrics = true,
@@ -49,7 +49,7 @@ export async function registerMetricsRoutes(
 
   // Register request metrics middleware if enabled
   if (enableRequestMetrics) {
-    app.addHook('onRequest', async (request: FastifyRequest) => {
+    app.addHook('onRequest', (request: FastifyRequest) => {
       // Skip excluded paths
       if (excludePaths.some((p) => request.url.startsWith(p))) {
         return;
@@ -66,7 +66,7 @@ export async function registerMetricsRoutes(
         });
     });
 
-    app.addHook('onResponse', async (request: FastifyRequest, reply: FastifyReply) => {
+    app.addHook('onResponse', (request: FastifyRequest, reply: FastifyReply) => {
       // Skip excluded paths
       if (excludePaths.some((p) => request.url.startsWith(p))) {
         return;

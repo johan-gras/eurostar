@@ -5,6 +5,8 @@ import type { AuthRepository } from '../auth.repository.js';
 import type { User, Session } from '../../db/schema.js';
 import * as passwordService from '../password.service.js';
 import * as tokenService from '../token.service.js';
+import { ok, err } from '../../result.js';
+import type { TokenPayload } from '../token.service.js';
 
 // Mock the password and token services
 vi.mock('../password.service.js', () => ({
@@ -283,11 +285,7 @@ describe('AuthService', () => {
     });
 
     it('should successfully refresh tokens', async () => {
-      vi.mocked(tokenService.verifyToken).mockReturnValue({
-        isOk: () => true,
-        isErr: () => false,
-        value: mockTokenPayload,
-      } as any);
+      vi.mocked(tokenService.verifyToken).mockReturnValue(ok(mockTokenPayload as TokenPayload));
       vi.mocked(mockRepo.findSessionByToken).mockResolvedValue(mockSession);
       vi.mocked(mockRedis.exists).mockResolvedValue(0);
       vi.mocked(mockRepo.createSession).mockResolvedValue({
@@ -305,11 +303,7 @@ describe('AuthService', () => {
     });
 
     it('should return error for invalid refresh token', async () => {
-      vi.mocked(tokenService.verifyToken).mockReturnValue({
-        isOk: () => false,
-        isErr: () => true,
-        error: 'invalid_token',
-      } as any);
+      vi.mocked(tokenService.verifyToken).mockReturnValue(err('invalid_token' as const));
 
       const result = await authService.refreshTokens('invalid-token');
 
@@ -320,11 +314,7 @@ describe('AuthService', () => {
     });
 
     it('should return error for blacklisted token', async () => {
-      vi.mocked(tokenService.verifyToken).mockReturnValue({
-        isOk: () => true,
-        isErr: () => false,
-        value: mockTokenPayload,
-      } as any);
+      vi.mocked(tokenService.verifyToken).mockReturnValue(ok(mockTokenPayload as TokenPayload));
       vi.mocked(mockRedis.exists).mockResolvedValue(1);
 
       const result = await authService.refreshTokens('blacklisted-token');
@@ -336,11 +326,7 @@ describe('AuthService', () => {
     });
 
     it('should return error for non-existent session', async () => {
-      vi.mocked(tokenService.verifyToken).mockReturnValue({
-        isOk: () => true,
-        isErr: () => false,
-        value: mockTokenPayload,
-      } as any);
+      vi.mocked(tokenService.verifyToken).mockReturnValue(ok(mockTokenPayload as TokenPayload));
       vi.mocked(mockRedis.exists).mockResolvedValue(0);
       vi.mocked(mockRepo.findSessionByToken).mockResolvedValue(null);
 
@@ -357,11 +343,7 @@ describe('AuthService', () => {
         ...mockSession,
         expiresAt: new Date(Date.now() - 1000), // Expired
       };
-      vi.mocked(tokenService.verifyToken).mockReturnValue({
-        isOk: () => true,
-        isErr: () => false,
-        value: mockTokenPayload,
-      } as any);
+      vi.mocked(tokenService.verifyToken).mockReturnValue(ok(mockTokenPayload as TokenPayload));
       vi.mocked(mockRedis.exists).mockResolvedValue(0);
       vi.mocked(mockRepo.findSessionByToken).mockResolvedValue(expiredSession);
 
@@ -374,11 +356,7 @@ describe('AuthService', () => {
     });
 
     it('should blacklist old refresh token', async () => {
-      vi.mocked(tokenService.verifyToken).mockReturnValue({
-        isOk: () => true,
-        isErr: () => false,
-        value: mockTokenPayload,
-      } as any);
+      vi.mocked(tokenService.verifyToken).mockReturnValue(ok(mockTokenPayload as TokenPayload));
       vi.mocked(mockRepo.findSessionByToken).mockResolvedValue(mockSession);
       vi.mocked(mockRedis.exists).mockResolvedValue(0);
       vi.mocked(mockRepo.createSession).mockResolvedValue(mockSession);
@@ -393,11 +371,7 @@ describe('AuthService', () => {
     });
 
     it('should delete old session and create new one', async () => {
-      vi.mocked(tokenService.verifyToken).mockReturnValue({
-        isOk: () => true,
-        isErr: () => false,
-        value: mockTokenPayload,
-      } as any);
+      vi.mocked(tokenService.verifyToken).mockReturnValue(ok(mockTokenPayload as TokenPayload));
       vi.mocked(mockRepo.findSessionByToken).mockResolvedValue(mockSession);
       vi.mocked(mockRedis.exists).mockResolvedValue(0);
       vi.mocked(mockRepo.createSession).mockResolvedValue(mockSession);
@@ -418,11 +392,7 @@ describe('AuthService', () => {
   describe('validateAccessToken', () => {
     it('should return user for valid token', async () => {
       vi.mocked(tokenService.decodeToken).mockReturnValue(mockTokenPayload);
-      vi.mocked(tokenService.verifyToken).mockReturnValue({
-        isOk: () => true,
-        isErr: () => false,
-        value: mockTokenPayload,
-      } as any);
+      vi.mocked(tokenService.verifyToken).mockReturnValue(ok(mockTokenPayload as TokenPayload));
       vi.mocked(mockRedis.exists).mockResolvedValue(0);
       vi.mocked(mockRepo.findUserById).mockResolvedValue(mockUser);
 
@@ -453,11 +423,7 @@ describe('AuthService', () => {
 
     it('should return error for invalid token signature', async () => {
       vi.mocked(tokenService.decodeToken).mockReturnValue(null);
-      vi.mocked(tokenService.verifyToken).mockReturnValue({
-        isOk: () => false,
-        isErr: () => true,
-        error: 'invalid_token',
-      } as any);
+      vi.mocked(tokenService.verifyToken).mockReturnValue(err('invalid_token' as const));
 
       const result = await authService.validateAccessToken('invalid-signature');
 
@@ -469,11 +435,7 @@ describe('AuthService', () => {
 
     it('should return error for expired token', async () => {
       vi.mocked(tokenService.decodeToken).mockReturnValue(null);
-      vi.mocked(tokenService.verifyToken).mockReturnValue({
-        isOk: () => false,
-        isErr: () => true,
-        error: 'expired_token',
-      } as any);
+      vi.mocked(tokenService.verifyToken).mockReturnValue(err('expired_token' as const));
 
       const result = await authService.validateAccessToken('expired-token');
 
@@ -485,11 +447,7 @@ describe('AuthService', () => {
 
     it('should return error for non-existent user', async () => {
       vi.mocked(tokenService.decodeToken).mockReturnValue(mockTokenPayload);
-      vi.mocked(tokenService.verifyToken).mockReturnValue({
-        isOk: () => true,
-        isErr: () => false,
-        value: mockTokenPayload,
-      } as any);
+      vi.mocked(tokenService.verifyToken).mockReturnValue(ok(mockTokenPayload as TokenPayload));
       vi.mocked(mockRedis.exists).mockResolvedValue(0);
       vi.mocked(mockRepo.findUserById).mockResolvedValue(null);
 

@@ -124,7 +124,7 @@ export class MetricsRegistry {
       throw new Error(`Metric ${fullName} already exists as ${metric.type}`);
     }
 
-    return new Counter(metric as CounterMetric);
+    return new Counter(metric);
   }
 
   /**
@@ -148,7 +148,7 @@ export class MetricsRegistry {
       throw new Error(`Metric ${fullName} already exists as ${metric.type}`);
     }
 
-    return new Gauge(metric as GaugeMetric);
+    return new Gauge(metric);
   }
 
   /**
@@ -173,7 +173,7 @@ export class MetricsRegistry {
       throw new Error(`Metric ${fullName} already exists as ${metric.type}`);
     }
 
-    return new Histogram(metric as HistogramMetric);
+    return new Histogram(metric);
   }
 
   /**

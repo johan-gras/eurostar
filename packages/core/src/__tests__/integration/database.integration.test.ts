@@ -4,7 +4,7 @@ import {
   createConnectionPool,
   type ConnectionManager,
 } from '../../db/connection.js';
-import { users, trains, bookings, claims } from '../../db/schema.js';
+import { users, trains } from '../../db/schema.js';
 
 /**
  * Integration tests for database connection and queries.
