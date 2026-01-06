@@ -61,6 +61,7 @@ export type TerminalParams = Static<typeof TerminalParamsSchema>;
  */
 export const TimelineQuerySchema = Type.Object({
   hours: Type.Optional(Type.Integer({ minimum: 1, maximum: 48, default: 12 })),
+  date: Type.Optional(Type.String({ format: 'date' })),
 });
 
 export type TimelineQuery = Static<typeof TimelineQuerySchema>;

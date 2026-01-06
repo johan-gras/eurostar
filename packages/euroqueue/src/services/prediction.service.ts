@@ -23,6 +23,14 @@ function getDayOfWeek(date: Date): DayOfWeek {
   return DAYS_OF_WEEK[date.getUTCDay()] as DayOfWeek;
 }
 
+function getWeek(date: Date): number {
+  const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+}
+
 /**
  * Calculate confidence based on sample count and adjustment factors.
  */
@@ -48,6 +56,7 @@ export function predictQueueTime(context: PredictionContext): QueuePrediction {
 
   const dayOfWeek = getDayOfWeek(dateTime);
   const hour = dateTime.getUTCHours();
+  const week = getWeek(dateTime);
 
   const historicalData = getHistoricalData(terminal, dayOfWeek, hour);
 
@@ -56,6 +65,11 @@ export function predictQueueTime(context: PredictionContext): QueuePrediction {
   const sampleCount = historicalData?.sampleCount ?? 0;
 
   let hasAdjustments = false;
+
+  // Apply weekly variation: predictions vary by week number (mod 4)
+  // This creates a ~10% variation between different weeks
+  const weekFactor = 1 + ((week % 4) - 1.5) * 0.05;
+  estimatedMinutes *= weekFactor;
 
   // Apply holiday adjustment: holidays typically 30-50% busier
   if (isHoliday) {
