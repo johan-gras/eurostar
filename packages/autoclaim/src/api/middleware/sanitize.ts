@@ -29,6 +29,7 @@ export function sanitizeObject<T>(obj: T, maxStringLength = 100000): T {
   }
 
   if (Array.isArray(obj)) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return obj.map((item) => sanitizeObject(item, maxStringLength)) as T;
   }
 

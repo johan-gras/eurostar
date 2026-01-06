@@ -70,5 +70,5 @@ async function main() {
 
 // Run if executed directly
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/^file:\/\//, ''))) {
-  main();
+  void main();
 }

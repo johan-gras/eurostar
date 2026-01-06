@@ -150,8 +150,8 @@ export function createClaimReminderWorker(
   });
 
   // Cleanup on worker close
-  worker.on('closed', async () => {
-    await emailQueue.close();
+  worker.on('closed', () => {
+    void emailQueue.close();
   });
 
   return worker;

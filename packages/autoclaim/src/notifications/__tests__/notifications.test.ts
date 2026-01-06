@@ -2,9 +2,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   NotificationType,
   NotificationStatus,
-  type NotificationPayload,
-  type ClaimEligiblePayload,
-  type DeadlineWarningPayload,
 } from '../types.js';
 import {
   MockEmailService,
@@ -20,11 +17,8 @@ import {
   DEADLINE_WARNING_PAYLOAD,
   CLAIM_REMINDER_PAYLOAD,
   CLAIM_ELIGIBLE_PAYLOAD_GBP,
-  CLAIM_ELIGIBLE_PROPS,
-  DEADLINE_WARNING_PROPS,
   TEST_NOTIFICATION_DATA,
   createClaimEligiblePayload,
-  createDeadlineWarningPayload,
   createTestNotificationData,
 } from './fixtures.js';
 

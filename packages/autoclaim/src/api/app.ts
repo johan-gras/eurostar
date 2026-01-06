@@ -77,6 +77,7 @@ export async function createApp(options: CreateAppOptions = {}): Promise<Fastify
   // Add content type parser with size limit for JSON
   app.addContentTypeParser('application/json', { parseAs: 'string', bodyLimit: 1024 * 1024 }, (_req, body, done) => {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const json = JSON.parse(body as string);
       done(null, json);
     } catch (err) {

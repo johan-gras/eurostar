@@ -26,11 +26,6 @@ test.describe('Claims', () => {
     });
 
     test('filter controls are visible', async ({ page }) => {
-      // Check for filter controls (status filter, date range, etc.)
-      const filterSection = page.locator('[data-testid="claims-filters"]').or(
-        page.locator('text=Filter').locator('..')
-      );
-
       // Filter controls may or may not be visible in empty state
       // Just verify the page structure is correct
       await expect(page.getByRole('heading', { name: 'Claims' })).toBeVisible();

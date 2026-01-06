@@ -108,7 +108,7 @@ export async function registerAuth(
 
       // Verify JWT
       if (secret && app.jwt) {
-        const decoded = await app.jwt.verify<JwtPayload>(token);
+        const decoded = app.jwt.verify<JwtPayload>(token);
         request.jwtUser = decoded;
       } else {
         // Placeholder: decode without verification for dev

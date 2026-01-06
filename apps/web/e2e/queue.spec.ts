@@ -146,11 +146,6 @@ test.describe('Queue Times - Interactions', () => {
   });
 
   test('timeline chart renders colored bars', async ({ page }) => {
-    // Verify chart bars are rendered (colored div elements)
-    const chartContainer = page.locator('[data-testid="queue-chart"]').or(
-      page.locator('text=Queue Predictions').locator('..').locator('..')
-    );
-
     // Look for colored bars indicating queue levels
     const greenBars = page.locator('.bg-green-500');
     const yellowBars = page.locator('.bg-yellow-500');
@@ -261,7 +256,6 @@ test.describe('Queue Times - Interactions', () => {
   test('queue status updates for different terminals', async ({ page }) => {
     // Check St Pancras status
     await expect(page.getByText('Current Queue Status')).toBeVisible();
-    const initialWaitText = await page.locator('text=/\\d+\\s*min/').first().textContent();
 
     // Change to Gare du Nord
     await page.locator('select').selectOption('gare-du-nord');
@@ -444,13 +438,8 @@ test.describe('Queue Times - Auto-Refresh', () => {
     await waitForPageReady(page);
     await expect(page.getByText('Loading...')).not.toBeVisible({ timeout: 10000 });
 
-    // Get initial "Last updated" text
-    const lastUpdatedLocator = page.getByText(/Last updated:/);
-    const initialUpdateText = await lastUpdatedLocator.textContent();
-
     // Mock the current time to be 2 minutes later
     await page.evaluate(() => {
-      const originalDate = Date;
       const futureTime = Date.now() + 2 * 60 * 1000; // 2 minutes later
 
       // Override Date.now()
@@ -550,12 +539,10 @@ test.describe('Queue Times - Accessibility', () => {
     await waitForPageReady(page);
 
     // Verify departure time input has associated label
-    const departureTimeInput = page.locator('#departure-time');
     const departureLabel = page.locator('label[for="departure-time"]');
     await expect(departureLabel).toBeVisible();
 
     // Verify max wait input has associated label
-    const maxWaitInput = page.locator('#max-wait');
     const maxWaitLabel = page.locator('label[for="max-wait"]');
     await expect(maxWaitLabel).toBeVisible();
   });

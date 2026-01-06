@@ -238,7 +238,7 @@ function generateEmailContent(
     case 'weekly_summary':
       return generateWeeklySummaryEmail(context);
     default:
-      throw new Error(`Unknown email type: ${type}`);
+      throw new Error(`Unknown email type: ${type as string}`);
   }
 }
 

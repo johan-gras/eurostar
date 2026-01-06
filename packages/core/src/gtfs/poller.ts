@@ -167,7 +167,10 @@ export class GtfsPoller extends EventEmitter {
           this.logger.error('Unexpected error in poll interval', {
             error: String(error),
           });
-          this.emit('error', error);
+          const gtfsError = error instanceof GtfsFetchError
+            ? error
+            : new GtfsFetchError(error instanceof Error ? error.message : String(error), undefined, true);
+          this.emit('error', gtfsError);
         });
       }
     }, this.pollIntervalMs);

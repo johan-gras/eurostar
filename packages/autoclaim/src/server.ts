@@ -14,6 +14,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 import type { Worker } from 'bullmq';
+import type { Redis } from 'ioredis';
 import { createDb, type Database } from '@eurostar/core/db';
 import {
   createGtfsWorker,

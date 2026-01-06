@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { AuthRepository } from '../auth.repository.js';
 import type { Database } from '../../db/index.js';
 import type { User, Session } from '../../db/schema.js';

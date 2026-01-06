@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { GtfsPoller, type CircuitState, type HealthStatus, type Logger } from '../poller.js';
+import { GtfsPoller, type HealthStatus, type Logger } from '../poller.js';
 import * as client from '../client.js';
 import { ok, err } from '../../result.js';
 import { GtfsFetchError, type GtfsUpdateEvent, type ParsedTrainDelay } from '../types.js';
