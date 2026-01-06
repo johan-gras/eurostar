@@ -584,11 +584,6 @@ test.describe('Seat Map - Accessibility', () => {
     const submitButton = page.getByRole('button', { name: 'Find Best Seats' });
     await submitButton.focus();
 
-    // Check that focus ring is visible (Tailwind focus-visible classes)
-    const classList = await submitButton.evaluate((el) =>
-      Array.from(el.classList)
-    );
-
     // Either has focus-visible classes or will show focus ring
     // The button should be styled to show focus
     await expect(submitButton).toBeFocused();
