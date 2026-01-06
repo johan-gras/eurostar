@@ -10,6 +10,7 @@ import {
   getSeatInfo,
   getSeatsByCoach,
   recommendSeats,
+  getAllSeatsForTrain,
 } from '@eurostar/seatmap';
 import {
   TrainTypeParamsSchema,
@@ -105,6 +106,40 @@ export async function registerSeatRoutes(app: FastifyInstance): Promise<void> {
       }
 
       return reply.send({ data: coaches });
+    }
+  );
+
+  /**
+   * GET /api/v1/seats/:trainType/all
+   * Returns all seats for the entire train
+   */
+  app.get<{
+    Params: TrainTypeParams;
+    Reply: { data: SeatInfoResponse[] };
+  }>(
+    '/api/v1/seats/:trainType/all',
+    {
+      schema: {
+        params: TrainTypeParamsSchema,
+        response: {
+          200: SeatsListResponseSchema,
+          400: ErrorResponseSchema,
+          404: ErrorResponseSchema,
+        },
+      },
+    },
+    async (request: FastifyRequest<{ Params: TrainTypeParams }>, reply: FastifyReply) => {
+      const { trainType } = request.params;
+      const seats = getAllSeatsForTrain(trainType as TrainType);
+
+      if (seats.length === 0) {
+        throw ApiException.notFound(
+          `Train type '${trainType}' not found or not yet supported`,
+          'TRAIN_TYPE_NOT_FOUND'
+        );
+      }
+
+      return reply.send({ data: seats });
     }
   );
 
