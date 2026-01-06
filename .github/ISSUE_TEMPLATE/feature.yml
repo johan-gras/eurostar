@@ -1,0 +1,53 @@
+name: Feature / Bug Fix
+description: Define a feature or bug fix with API contract
+labels: [feature]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Issue Contract
+        Define what needs to be built/fixed. This is the source of truth for implementation.
+
+  - type: textarea
+    id: contract
+    attributes:
+      label: Contract
+      description: Define the endpoints, interfaces, or behavior changes
+      placeholder: |
+        GET /api/v1/example/{id}
+        Response: { data: ExampleType }
+
+        OR for non-API changes:
+        - Component should render X when Y
+        - Function should return Z given input W
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: Checklist to verify the implementation is complete
+      placeholder: |
+        - [ ] Endpoint returns correct data
+        - [ ] Types match contract
+        - [ ] Tests pass
+        - [ ] No console errors
+    validations:
+      required: true
+
+  - type: textarea
+    id: files
+    attributes:
+      label: Files to Modify
+      description: List the files that need to be changed (optional but helpful)
+      placeholder: |
+        - packages/autoclaim/src/api/handlers/example.handler.ts
+        - apps/web/src/app/(protected)/example/page.tsx
+
+  - type: textarea
+    id: depends
+    attributes:
+      label: Dependencies
+      description: What must be completed first?
+      placeholder: "Depends on #X"
