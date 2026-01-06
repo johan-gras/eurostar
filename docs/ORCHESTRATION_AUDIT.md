@@ -496,4 +496,136 @@ The solution isn't more automation—it's **structured work with verification**.
 
 ---
 
-*Document generated: 2026-01-06*
+## Appendix: Real-World Execution Log
+
+This section documents the actual execution of the new orchestration pattern on 2026-01-06.
+
+### What Was Done
+
+| Step | Action | Result |
+|------|--------|--------|
+| 1 | Initialize git, push to GitHub | Success |
+| 2 | Add issue/PR templates | Success |
+| 3 | Enable branch protection | Success |
+| 4 | Create Issue #1 (seat map) | Success |
+| 5 | Create Issue #2 (queue naming) | Success |
+| 6 | Create Issue #3 (queue date) | Success |
+| 7 | Delegate Issue #1 → PR #4 | PR created |
+| 8 | Delegate Issue #2 → PR #5 | PR created |
+| 9 | Delegate Issue #3 → PR #6 | PR created |
+| 10 | Check CI status | **FAILED** |
+
+### What Went Wrong
+
+#### Mistake 1: Didn't Run CI Locally Before Push
+
+Pushed 72,000 lines to GitHub without running `pnpm lint`. The original codebase had **31 ESLint errors** that were never caught.
+
+```
+# Should have done:
+pnpm lint && pnpm build && pnpm test
+git push  # Only if above passes
+```
+
+#### Mistake 2: Didn't Check CI After Initial Commit
+
+After pushing, didn't verify CI status. Would have immediately shown main was broken.
+
+```
+# Should have done:
+gh run list --repo johan-gras/eurostar --branch main
+# Check for failures
+```
+
+#### Mistake 3: Created PRs Without Reviewing
+
+Created 3 PRs and moved to next task without:
+- Reviewing the diff
+- Checking if implementation matched contract
+- Waiting for CI
+
+```
+# Should have done after each PR:
+gh pr diff 4 --repo johan-gras/eurostar
+gh pr checks 4 --repo johan-gras/eurostar --watch
+```
+
+#### Mistake 4: PR #6 Had Wrong Base
+
+PR #6 was branched from `main`, but it depended on PR #5's endpoint fixes. Result: PR #6 had wrong endpoint names.
+
+```
+# Should have done:
+git checkout fix/issue-2-queue-endpoint-names  # Branch from PR #5
+git checkout -b fix/issue-3-queue-date-param
+```
+
+### Root Cause Analysis
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    WHY EVERYTHING FAILED                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1. Original meta-orchestration never ran lint                              │
+│     └── 31 ESLint errors in codebase                                        │
+│                                                                             │
+│  2. Orchestrator pushed without local verification                          │
+│     └── Broken code went to GitHub                                          │
+│                                                                             │
+│  3. Orchestrator didn't check CI after push                                 │
+│     └── Didn't know main was failing                                        │
+│                                                                             │
+│  4. Orchestrator created PRs without review                                 │
+│     └── Issues in PRs went unnoticed                                        │
+│                                                                             │
+│  5. Branch protection requires CI to pass                                   │
+│     └── All PRs blocked until baseline fixed                                │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Corrected Pattern
+
+The pattern needs **verification at every step**:
+
+```
+1. Before pushing to remote:
+   └── pnpm lint && pnpm build && pnpm test
+
+2. After pushing:
+   └── gh run list --branch main (verify CI passes)
+
+3. After creating issue:
+   └── Verify contract is complete and unambiguous
+
+4. After PR created:
+   └── gh pr diff (review against contract)
+   └── gh pr checks --watch (wait for CI)
+   └── Fix any issues before moving on
+
+5. Before merging:
+   └── CI green
+   └── Review approved
+   └── No conflicts
+```
+
+### Current Status (2026-01-06 21:00 UTC)
+
+| Item | Status |
+|------|--------|
+| Main branch CI | Failing (31 lint errors) |
+| PR #4 (seat map) | Created, CI blocked |
+| PR #5 (queue naming) | Created, CI blocked |
+| PR #6 (queue date) | Created, fixed, CI blocked |
+| PR #8 (tsconfig fix) | Created, CI blocked |
+
+**Next step:** Fix all 31 lint errors so CI passes on main, then all PRs can be verified.
+
+### Lessons Learned Document
+
+A separate `LESSONS_LEARNED.md` document has been created to track mistakes and prevention strategies. This should be updated whenever a new mistake is discovered.
+
+---
+
+*Document updated: 2026-01-06*
