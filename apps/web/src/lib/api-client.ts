@@ -88,10 +88,17 @@ async function handleTokenRefresh(): Promise<boolean> {
  * Build URL with query parameters
  */
 function buildUrl(endpoint: string, params?: Record<string, string | number | boolean | undefined>): string {
-  const url = new URL(endpoint, window.location.origin);
+  let url: URL;
 
-  if (!endpoint.startsWith('http')) {
-    url.pathname = `${API_BASE_URL}${endpoint}`;
+  if (endpoint.startsWith('http')) {
+    // Endpoint is already a full URL
+    url = new URL(endpoint);
+  } else if (API_BASE_URL.startsWith('http')) {
+    // API_BASE_URL is a full URL (e.g., http://localhost:3001)
+    url = new URL(`${API_BASE_URL}${endpoint}`);
+  } else {
+    // API_BASE_URL is a relative path (e.g., /api/v1)
+    url = new URL(`${API_BASE_URL}${endpoint}`, window.location.origin);
   }
 
   if (params) {
